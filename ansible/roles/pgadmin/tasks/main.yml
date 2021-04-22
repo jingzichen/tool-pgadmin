@@ -1,0 +1,43 @@
+- name: Create pgAdmin directory
+  file:
+    path: "{{ pgadmin_folder }}"
+    state: directory
+
+- name: Create pgAdmin certs directory
+  file:
+    path: "{{ pgadmin_certs_folder }}"
+    state: directory
+
+- name: Create pgAdmin data storage directory
+  file:
+    path: "{{ pgadmin_data_folder }}"
+    state: directory
+
+- name: Give insecure permissions to pgAdmin data storage
+  file:
+    path: "{{ pgadmin_data_folder }}"
+    owner: "{{ sudoer }}"
+    group: "{{ sudoer }}"
+    mode: "0777"
+
+- name: Copy certs
+  copy:
+    src: "{{ server_cert }}"
+    dest: "{{ pgadmin_certs_folder }}/server.cert"
+    mode: "u=rw,g=r,o=r"
+
+- name: Copy key
+  copy:
+    src: "{{ server_key }}"
+    dest: "{{ pgadmin_certs_folder }}/server.key"
+    mode: "u=rw,g=r,o=r"
+
+- name: Copy docker-compose.yaml
+  copy:
+    src: "{{ source_folder }}/pgadmin/docker-compose.yml"
+    dest: "{{ pgadmin_folder }}"
+
+- name: Run pgAdmin container
+  shell: "docker-compose up -d --force-recreate"
+  args:
+    chdir: "{{ pgadmin_folder }}"

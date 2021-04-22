@@ -1,0 +1,63 @@
+---
+- hosts: localhost
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Check if ntp is installed
+      import_role:
+        name: check_package
+        tasks_from: check_command_existence
+      vars:
+        command: sntp
+
+    - name: Sync system timezone
+      import_role:
+        name: sync_system_timezone
+      when: existence.rc != 0
+
+    - name: Check Pip Existence
+      import_role:
+        name: check_package
+        tasks_from: check_command_existence
+      vars:
+        command: pip
+
+    - name: Install Pip
+      apt:
+        name: python-pip
+        state: latest
+
+    - name: Check Docker Existence
+      import_role:
+        name: check_package
+        tasks_from: check_command_existence
+      vars:
+        command: docker
+
+    - name: Install Docker
+      import_role:
+        name: install_docker
+      vars:
+        user: cloud-user
+      when: existence.rc != 0
+
+    - name: Check if docker-compose is installed
+      import_role:
+        name: check_package
+        tasks_from: check_command_existence
+      vars:
+        command: docker-compose
+
+    - name: Install docker-compose
+      import_role:
+        name: install_docker-compose
+      vars:
+        version: 1.29.0
+      when: existence.rc != 0
+
+    - name: Create or Update daemon.json
+      import_role:
+        name: update_daemon
+      vars:
+        source_folder: ../files/pgadmin

@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  gather_facts: no
+  become: true
+
+  tasks:
+    - name: Prepare pgadmin files
+      import_role:
+        name: pgadmin
+      vars:
+        sudoer: cloud-user
+        source_folder: ../files
+        pgadmin_folder: </USER>/pgadmin
+        pgadmin_data_folder: </USER>/pgadmin/data
+        pgadmin_certs_folder: </USER>/pgadmin/certs
+        server_cert: </USER>/server_cert
+        server_key: </USER>/server_key
+

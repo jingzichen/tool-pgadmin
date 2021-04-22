@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  pgadmin:
+    restart: always
+    container_name: pgadmin
+    image: dpage/pgadmin4:5.1
+    tty: true
+    stdin_open: true
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=ashelytest@test.com
+      - PGADMIN_DEFAULT_PASSWORD=testastest
+      - PGADMIN_ENABLE_TLS=true
+    volumes:
+      - $PWD/data:/var/lib/pgadmin
+      - $PWD/certs:/certs
+    ports:
+      - "3443:443"
